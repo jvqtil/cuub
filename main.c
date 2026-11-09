@@ -15,6 +15,12 @@ double  t_start;
 enum    { IDLE, RUNNING, STOPPED } state = IDLE;
 char    t_buf[32] = initTimerFormat;
 
+void fmt_time(char *buf, double t) {
+  int cs = (int)(t * 100);
+  if (cs >= 6000) sprintf(buf, "%d:%02d.%02d", cs / 6000, cs / 100 % 60, cs % 100);
+  else            sprintf(buf, "%d.%02d", cs / 100, cs % 100);
+}
+
 int main(void) {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(initScreenWidth, initScreenHeight, "cuub");
@@ -32,7 +38,7 @@ int main(void) {
 	state = RUNNING;
 	break;
       case RUNNING:
-	sprintf(t_buf, "%.2f", GetTime() - t_start);
+	fmt_time(t_buf, GetTime() - t_start);
 	state = STOPPED;
 	break;
       case STOPPED:
@@ -63,7 +69,7 @@ int main(void) {
       ToggleFullscreen();
     }
 
-    if (state == RUNNING) sprintf(t_buf, "%.2f", GetTime() - t_start);
+    if (state == RUNNING) fmt_time(t_buf, GetTime() - t_start);
 
     BeginDrawing();
     ClearBackground((Color){18, 18, 18, 255});
