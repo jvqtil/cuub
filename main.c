@@ -1,37 +1,46 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <raylib.h>
 
+#include "scramble.h"
+
 #define initScreenWidth 800
 #define initScreenHeight 400
-#define initFontSize 24
+#define initFontSize 32
+#define initTimerFormat "0.00"
 
-clock_t t_start;
-int     t_running = 0;
-char    t_buf[32] = "0.000";
+double  t_start;
+enum    { IDLE, RUNNING, STOPPED } state = IDLE;
+char    t_buf[32] = initTimerFormat;
 
-void timer_start(void) {
-  t_start = GetTime();
-  t_running = 1;
-}
-
-void timer_reset(void) {
-  t_running = 0;
-  strcpy(t_buf, "0.000");
-}
-
-int main() {
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+int main(void) {
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(initScreenWidth, initScreenHeight, "cuub");
-  SetTargetFPS(60);
+
+  srand(time(NULL));
+  scramble_gen();
 
   int fontSize = initFontSize;
-
+  
   while (!WindowShouldClose()) {
     if (IsKeyPressed(KEY_SPACE)) {
-      if (t_running) timer_reset();
-      else timer_start();
+      switch (state) {
+      case IDLE:
+	t_start = GetTime();
+	state = RUNNING;
+	break;
+      case RUNNING:
+	sprintf(t_buf, "%.2f", GetTime() - t_start);
+	state = STOPPED;
+	break;
+      case STOPPED:
+	strcpy(t_buf, initTimerFormat);
+	scramble_gen();
+	state = IDLE;
+	break;
+      }
     }
 
     if (IsKeyDown(KEY_EQUAL)) {
@@ -50,13 +59,19 @@ int main() {
       fontSize = initFontSize;
     }
 
-    if (t_running) sprintf(t_buf, "%.3f", GetTime() - t_start);
+    if (IsKeyPressed(KEY_F)) {
+      ToggleFullscreen();
+    }
+
+    if (state == RUNNING) sprintf(t_buf, "%.2f", GetTime() - t_start);
 
     BeginDrawing();
-    ClearBackground((Color){18, 18, 18, 1});
+    ClearBackground((Color){18, 18, 18, 255});
 
-    int textW = MeasureText(t_buf, fontSize);
+    int textW = MeasureText(initTimerFormat, fontSize);
     DrawText(t_buf, GetScreenWidth()/2 - textW/2, GetScreenHeight()/2 - fontSize/2, fontSize, WHITE);
+    
+    DrawText(scramble, 20, 20, 20, WHITE);
 
     EndDrawing();
   }
