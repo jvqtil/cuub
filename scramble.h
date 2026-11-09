@@ -1,3 +1,8 @@
+/*
+  Original: https://github.com/noocsharp/scramble/blob/master/scramble.c
+  This is a modified version that removes CLI functionality and is a header
+*/
+
 #ifndef SCRAMBLE_H
 #define SCRAMBLE_H
 
@@ -23,19 +28,13 @@ static int typo_scramble(const char** moves, uint8_t length) {
     uint8_t last_side = 0;
 
     uint8_t counter = 0;
-    // TODO deal with RAND_MAX
     while (counter < length) {
         uint8_t rval = (uint8_t) rand();
-        // 3 possible values for set, so 2 bits
         uint8_t set = rval & 3;
-        // 6 possible values for side, so 3 bits
         uint8_t side = (rval >> 2) & 7;
 
-        // prevent biasing of results that would occur if
-        // we just took the modulus of the values
         if (set == 3 || side > 5) continue;
 
-        // if the side is the same as before, choose another side
         if (counter != 0 && side == last_side) continue;
 
         moves[counter++] = pmoves[set][side];
