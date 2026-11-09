@@ -3,6 +3,7 @@ Timer for cubing written in pure C with Raylib.
 
 ## Building
 Do `make` to build the `cuub` binary
+Then `sudo make install`
 
 ## Usage
 - `+`, `-`, `0` to change font size
