@@ -6,14 +6,14 @@
 
 #include "scramble.h"
 
-#define initScreenWidth 800
-#define initScreenHeight 400
-#define initFontSize 32
-#define initTimerFormat "0.00"
+#define FONT_SIZE 48
+#define MIN_FONT_SIZE 8
+#define MAX_FONT_SIZE 200
+#define TIMER_FORMAT "0.00"
 
 double  t_start;
 enum    { IDLE, RUNNING, STOPPED } state = IDLE;
-char    t_buf[32] = initTimerFormat;
+char    t_buf[32] = TIMER_FORMAT;
 
 void fmt_time(char *buf, double t) {
   int cs = (int)(t * 100);
@@ -23,12 +23,12 @@ void fmt_time(char *buf, double t) {
 
 int main(void) {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  InitWindow(initScreenWidth, initScreenHeight, "cuub");
+  InitWindow(800, 400, "cuub");
 
   srand(time(NULL));
   scramble_gen();
 
-  int fontSize = initFontSize;
+  int fontSize = FONT_SIZE;
   
   while (!WindowShouldClose()) {
     if (IsKeyPressed(KEY_SPACE)) {
@@ -42,7 +42,7 @@ int main(void) {
 	state = STOPPED;
 	break;
       case STOPPED:
-	strcpy(t_buf, initTimerFormat);
+	strcpy(t_buf, TIMER_FORMAT);
 	scramble_gen();
 	state = IDLE;
 	break;
@@ -50,19 +50,19 @@ int main(void) {
     }
 
     if (IsKeyDown(KEY_EQUAL)) {
-      if (fontSize < 128) {
+      if (fontSize < MAX_FONT_SIZE) {
 	fontSize += 1;
       }
     }
     
     if (IsKeyDown(KEY_MINUS)) {
-      if (fontSize > 8) {
+      if (fontSize > MIN_FONT_SIZE) {
 	fontSize -= 1;
       }
     }
 
     if (IsKeyPressed(KEY_ZERO)) {
-      fontSize = initFontSize;
+      fontSize = FONT_SIZE;
     }
 
     if (IsKeyPressed(KEY_F)) {
@@ -74,7 +74,7 @@ int main(void) {
     BeginDrawing();
     ClearBackground((Color){18, 18, 18, 255});
 
-    int textW = MeasureText(initTimerFormat, fontSize);
+    int textW = MeasureText(TIMER_FORMAT, fontSize);
     DrawText(t_buf, GetScreenWidth()/2 - textW/2, GetScreenHeight()/2 - fontSize/2, fontSize, WHITE);
     
     DrawText(scramble, 20, 20, 20, WHITE);
