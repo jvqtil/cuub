@@ -7,7 +7,7 @@ Then `sudo make install`
 
 ## Usage
 - `+`, `-`, `0` to change font size
-- `space` to start timer, stop it, reset timer and scramble
+- `space` or `left mouse button` to start timer, stop it, reset timer and scramble
 
 ## Thanks to
 cuub uses a slightly modified version of noocsharp's scramble generator
