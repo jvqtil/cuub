@@ -7,7 +7,7 @@
 #include "scramble.h"
 
 #define FONT_SIZE 48
-#define MIN_FONT_SIZE 2
+#define MIN_FONT_SIZE 8
 #define MAX_FONT_SIZE 400
 #define TIMER_FORMAT "0.00"
 
