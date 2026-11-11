@@ -31,7 +31,7 @@ int main(void) {
   int fontSize = FONT_SIZE;
   
   while (!WindowShouldClose()) {
-    if (IsKeyPressed(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       switch (state) {
       case IDLE:
 	t_start = GetTime();
