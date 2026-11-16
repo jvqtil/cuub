@@ -5,11 +5,12 @@
 #include <raylib.h>
 
 #include "scramble.h"
+#include "cube_draw.h"
 
 #define FONT_SIZE 48
 #define MIN_FONT_SIZE 8
 #define MAX_FONT_SIZE 400
-#define TIMER_FORMAT "0.00"
+#define TIMER_FORMAT "00.00"
 
 double  t_start;
 enum    { IDLE, RUNNING, STOPPED } state = IDLE;
@@ -18,28 +19,34 @@ char    t_buf[32] = TIMER_FORMAT;
 void fmt_time(char *buf, double t) {
   int cs = (int)(t * 100);
   if (cs >= 6000) sprintf(buf, "%d:%02d.%02d", cs / 6000, cs / 100 % 60, cs % 100);
-  else            sprintf(buf, "%d.%02d", cs / 100, cs % 100);
+  else            sprintf(buf, "%02d.%02d", cs / 100, cs % 100);
 }
 
 int main(void) {
+  int screenWidth = 800, screenHeight = 400;
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-  InitWindow(800, 400, "cuub");
+  InitWindow(screenWidth, screenHeight, "cuub");
 
   srand(time(NULL));
   scramble_gen();
 
   int fontSize = FONT_SIZE;
-  
+  int scramble_display = 1;
+
   while (!WindowShouldClose()) {
     if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       switch (state) {
       case IDLE:
 	t_start = GetTime();
 	state = RUNNING;
+
+	scramble_display = 0;
 	break;
       case RUNNING:
 	fmt_time(t_buf, GetTime() - t_start);
 	state = STOPPED;
+
+	scramble_display = 1;
 	break;
       case STOPPED:
 	strcpy(t_buf, TIMER_FORMAT);
@@ -69,6 +76,10 @@ int main(void) {
       ToggleFullscreen();
     }
 
+    if (IsKeyPressed(KEY_S)) {
+      scramble_display = !scramble_display;
+    }
+
     if (state == RUNNING) fmt_time(t_buf, GetTime() - t_start);
 
     BeginDrawing();
@@ -76,8 +87,13 @@ int main(void) {
 
     int textW = MeasureText(TIMER_FORMAT, fontSize);
     DrawText(t_buf, GetScreenWidth()/2 - textW/2, GetScreenHeight()/2 - fontSize/2, fontSize, WHITE);
-    
-    DrawText(scramble, 20, 20, 20, WHITE);
+
+    if (scramble_display > 0) {
+      DrawText(scramble, 20, 20, 20, WHITE);
+
+      int s = 12;
+      cube_draw(scramble, 20, GetScreenHeight() - 11*s, s);
+    }
 
     EndDrawing();
   }
