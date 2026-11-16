@@ -9,3 +9,6 @@ build:
 
 install:
 	mv cuub /usr/local/bin/
+
+uninstall:
+	rm /usr/local/bin/cuub
