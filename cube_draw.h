@@ -3,13 +3,21 @@
 #include <raylib.h>
 #include <string.h>
 
+typedef struct {
+  int col;
+  int row;
+  Color color;
+} CubeSticker;
+
+static CubeSticker stickers[54];
+
 static void cube_rot(int v[3], int a) {
   int t = v[(a+1)%3];
   v[(a+1)%3] = -v[(a+2)%3];
   v[(a+2)%3] = t;
 }
 
-static void cube_draw(const char *scramble, int x0, int y0, int s) {
+static void cube_calc(const char *scramble) {
   static const char   names[]  = "RLUDFB";
   static const Color  color[6] = { RED, ORANGE, WHITE, YELLOW, GREEN, BLUE };
 
@@ -22,7 +30,7 @@ static void cube_draw(const char *scramble, int x0, int y0, int s) {
     { 0,-1,  1,-1,  9,3 },  // B
   };
 
-    int p[54][3], n[54][3];
+  int p[54][3], n[54][3];
   for (int k = 0; k < 54; k++) {
     int face = k / 9, axis = face / 2, sign = face % 2 ? -1 : 1;
     memset(p[k], 0, sizeof p[k]);
@@ -39,7 +47,7 @@ static void cube_draw(const char *scramble, int x0, int y0, int s) {
     if      (m[1] == '\'') { turns = 3; m++; }
     else if (m[1] == '2')  { turns = 2; m++; }
     if (sign > 0) turns *= 3;
- 
+    
     for (int k = 0; k < 54; k++)
       if (p[k][axis] == sign)
         for (int t = 0; t < turns; t++) {
@@ -47,12 +55,24 @@ static void cube_draw(const char *scramble, int x0, int y0, int s) {
           cube_rot(n[k], axis);
         }
   }
- 
+
   for (int k = 0; k < 54; k++) {
     int axis = n[k][0] ? 0 : n[k][1] ? 1 : 2;
     const int *g = net[axis * 2 + (n[k][axis] < 0)];
-    int col = g[4] + 1 + g[1] * p[k][g[0]];
-    int row = g[5] + 1 + g[3] * p[k][g[2]];
-    DrawRectangle(x0 + col * s, y0 + row * s, s - 2, s - 2, color[k / 9]);
+    stickers[k].col   = g[4] + 1 + g[1] * p[k][g[0]];
+    stickers[k].row   = g[5] + 1 + g[3] * p[k][g[2]];
+    stickers[k].color = color[k / 9];
+  }
+}
+
+static void cube_draw(int x0, int y0, int s) {
+  for (int k = 0; k < 54; k++) {
+    DrawRectangle(
+		  x0 + stickers[k].col * s,
+		  y0 + stickers[k].row * s,
+		  s - 2,
+		  s - 2,
+		  stickers[k].color
+		 );
   }
 }

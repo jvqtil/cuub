@@ -34,6 +34,7 @@ int main(void) {
 
   srand(time(NULL));
   scramble_gen();
+  cube_calc(scramble);
 
   int fontSize = FONT_SIZE;
   int scramble_display = 1;
@@ -56,6 +57,7 @@ int main(void) {
       case STOPPED:
 	strcpy(t_buf, TIMER_FORMAT);
 	scramble_gen();
+	cube_calc(scramble);
 	state = IDLE;
 	break;
       }
@@ -97,7 +99,7 @@ int main(void) {
       DrawText(scramble, 20, 20, 20, WHITE);
 
       int s = 12;
-      cube_draw(scramble, 20, GetScreenHeight() - 11*s, s);
+      cube_draw(20, GetScreenHeight() - 11*s, s);
     }
     EndDrawing();
   }
