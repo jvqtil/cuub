@@ -27,6 +27,11 @@ int main(void) {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(screenWidth, screenHeight, "cuub");
 
+  // Simple fix for '1' as its not monospaced and breaks displaying looks
+  Font f = GetFontDefault();
+  f.glyphs['1' - 32].advanceX = (int)f.recs['0' - 32].width;
+  f.glyphs['1' - 32].offsetX += 1;
+
   srand(time(NULL));
   scramble_gen();
 
@@ -86,7 +91,7 @@ int main(void) {
     ClearBackground((Color){18, 18, 18, 255});
 
     int textW = MeasureText(TIMER_FORMAT, fontSize);
-    DrawText(t_buf, GetScreenWidth()/2 - textW/2, GetScreenHeight()/2 - fontSize/2, fontSize, WHITE);
+    DrawTextEx(f, t_buf, (Vector2){ GetScreenWidth()/2 - textW/2, GetScreenHeight()/2 - fontSize/2 }, fontSize, fontSize/10, WHITE);
 
     if (scramble_display > 0) {
       DrawText(scramble, 20, 20, 20, WHITE);
@@ -94,7 +99,6 @@ int main(void) {
       int s = 12;
       cube_draw(scramble, 20, GetScreenHeight() - 11*s, s);
     }
-
     EndDrawing();
   }
   
